@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>So Close - Countdown</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #8B5CF6 0%, #A855F7 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .container {
+            text-align: center;
+            color: white;
+        }
+        
+        .title {
+            font-size: 4.5rem;
+            font-weight: 300;
+            letter-spacing: 0.5em;
+            margin-bottom: 1rem;
+            margin-top: -2rem;
+            text-transform: uppercase;
+            opacity: 0.95;
+        }
+        
+        .credits {
+            font-size: 1rem;
+            font-weight: 400;
+            letter-spacing: 0.05em;
+            opacity: 0.6;
+            margin-bottom: 2rem;
+            text-transform: none;
+        }
+        
+        .countdown-container {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            justify-content: center;
+        }
+        
+        .time-unit {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .flip-card {
+            perspective: 1000px;
+            width: 120px;
+            height: 140px;
+            margin-bottom: 1rem;
+            position: relative;
+        }
+        
+        .flip-card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transform-style: preserve-3d;
+            transition: transform 0.6s ease-in-out;
+        }
+        
+        .flip-card.flip .flip-card-inner {
+            transform: rotateX(180deg);
+        }
+        
+        .flip-card-front, .flip-card-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            backface-visibility: hidden;
+        }
+        
+        .flip-card-back {
+            transform: rotateX(-180deg);
+        }
+        
+        .number {
+            font-size: 4rem;
+            font-weight: 700;
+            color: white;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .label {
+            font-size: 0.9rem;
+            font-weight: 400;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            opacity: 0.8;
+        }
+        
+        .brand {
+            font-size: 2rem;
+            font-weight: 600;
+            letter-spacing: 0.3em;
+            text-transform: lowercase;
+            opacity: 0.7;
+            margin-top: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+        
+        .brand-logo {
+            width: 2rem;
+            height: 2rem;
+            background: url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTIwIDQwQzMxLjA0NTcgNDAgNDAgMzEuMDQ1NyA0MCAyMEM0MCA4Ljk1NDMgMzEuMDQ1NyAwIDIwIDBDOC45NTQzIDAgMCA4Ljk1NDMgMCAyMEMwIDMxLjA0NTcgOC45NTQzIDQwIDIwIDQwWiIgZmlsbD0iIzhCNUNGNiIvPgo8cGF0aCBkPSJNMTMuMzMzNCAxMi4yMjI0SDI2LjY2NjdDMjguODc1OSAxMi4yMjI0IDMwLjY2NjcgMTQuMDEzMiAzMC42NjY3IDE2LjIyMjRWMjMuNzc3OUMzMC42NjY3IDI1Ljk4NzEgMjguODc1OSAyNy43Nzc5IDI2LjY2NjcgMjcuNzc3OUgxMy4zMzM0QzExLjEyNDIgMjcuNzc3OSA5LjMzMzQ2IDI1Ljk4NzEgOS4zMzM0NiAyMy43Nzc5VjE2LjIyMjRDOS4zMzM0NiAxNC4wMTMyIDExLjEyNDIgMTIuMjIyNCAxMy4zMzM0IDEyLjIyMjRaIiBmaWxsPSJ3aGl0ZSIvPgo8L3N2Zz4K') no-repeat center;
+            background-size: contain;
+            flex-shrink: 0;
+        }
+        
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .flip {
+            /* Animation handled by CSS transition */
+        }
+        
+        @keyframes flipDown {
+            /* Not needed anymore */
+        }
+        
+        @media (max-width: 768px) {
+            .title {
+                font-size: 3rem;
+                letter-spacing: 0.3em;
+                margin-bottom: 0.5rem;
+                margin-top: -1rem;
+            }
+            
+            .credits {
+                font-size: 0.8rem;
+                margin-bottom: 1.5rem;
+            }
+            
+            .countdown-container {
+                gap: 1rem;
+                flex-wrap: wrap;
+            }
+            
+            .flip-card {
+                width: 80px;
+                height: 100px;
+            }
+            
+            .number {
+                font-size: 2.5rem;
+            }
+            
+            .label {
+                font-size: 0.8rem;
+            }
+            
+            .brand {
+                font-size: 1.5rem;
+            }
+            
+            .brand-logo {
+                width: 1.5rem;
+                height: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="particles" id="particles"></div>
+    
+    <div class="container">
+        <h1 class="title">So Close</h1>
+        <div class="credits">made by lexeria</div>
+        
+        <div class="countdown-container">
+            <div class="time-unit">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <div class="number" id="days">00</div>
+                        </div>
+                        <div class="flip-card-back">
+                            <div class="number" id="days-next">00</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="label">Days</div>
+            </div>
+            
+            <div class="time-unit">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <div class="number" id="hours">00</div>
+                        </div>
+                        <div class="flip-card-back">
+                            <div class="number" id="hours-next">00</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="label">Hours</div>
+            </div>
+            
+            <div class="time-unit">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <div class="number" id="minutes">00</div>
+                        </div>
+                        <div class="flip-card-back">
+                            <div class="number" id="minutes-next">00</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="label">Minutes</div>
+            </div>
+            
+            <div class="time-unit">
+                <div class="flip-card">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <div class="number" id="seconds">00</div>
+                        </div>
+                        <div class="flip-card-back">
+                            <div class="number" id="seconds-next">00</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="label">Seconds</div>
+            </div>
+        </div>
+        
+        <div class="brand">
+            <div class="brand-logo"></div>
+            gmonad
+        </div>
+    </div>
+    
+    <script>
+        // Set the target date (10 days from now as an example)
+        const targetDate = new Date();
+        targetDate.setDate(targetDate.getDate() + 10);
+        targetDate.setHours(0, 0, 0, 0);
+        
+        let previousValues = {
+            days: null,
+            hours: null,
+            minutes: null,
+            seconds: null
+        };
+        
+        function addFlipAnimation(element, newValue) {
+            const card = element.closest('.flip-card');
+            const nextElement = document.getElementById(element.id + '-next');
+            
+            // Yeni değeri arka karta koy
+            nextElement.textContent = newValue;
+            
+            // Flip animasyonunu başlat
+            card.classList.add('flip');
+            
+            // Animasyon bitince değerleri güncelle
+            setTimeout(() => {
+                element.textContent = newValue;
+                card.classList.remove('flip');
+            }, 300); // Yarı animasyon süresi
+        }
+        
+        function updateCountdown() {
+            const now = new Date().getTime();
+            const distance = targetDate - now;
+            
+            if (distance < 0) {
+                document.getElementById('days').textContent = '00';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+                document.getElementById('seconds').textContent = '00';
+                return;
+            }
+            
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            const currentValues = {
+                days: String(days).padStart(2, '0'),
+                hours: String(hours).padStart(2, '0'),
+                minutes: String(minutes).padStart(2, '0'),
+                seconds: String(seconds).padStart(2, '0')
+            };
+            
+            // Update display with flip animation for changed values
+            Object.keys(currentValues).forEach(key => {
+                const element = document.getElementById(key);
+                if (previousValues[key] !== null && previousValues[key] !== currentValues[key]) {
+                    addFlipAnimation(element, currentValues[key]);
+                } else if (previousValues[key] === null) {
+                    // İlk yükleme
+                    element.textContent = currentValues[key];
+                    document.getElementById(key + '-next').textContent = currentValues[key];
+                }
+            });
+            
+            previousValues = { ...currentValues };
+        }
+        
+        // Create floating particles
+        function createParticles() {
+            const particlesContainer = document.getElementById('particles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+                
+                const size = Math.random() * 4 + 2;
+                particle.style.width = `${size}px`;
+                particle.style.height = `${size}px`;
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                particle.style.animationDelay = `${Math.random() * 6}s`;
+                particle.style.animationDuration = `${6 + Math.random() * 4}s`;
+                
+                particlesContainer.appendChild(particle);
+            }
+        }
+        
+        // Initialize
+        createParticles();
+        updateCountdown();
+        setInterval(updateCountdown, 1000);
+    </script>
+</body>
+</html>
